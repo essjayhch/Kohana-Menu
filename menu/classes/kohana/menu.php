@@ -178,7 +178,7 @@ class Kohana_Menu {
 		$is_acl = isset(self::$acl) && isset(self::$role);
         foreach ($items as $item)
 		{
-			if ($is_acl AND ! self::$acl->is_allowed(self::$role, $item->resource, $item->privilege))
+			if ($is_acl AND ! $this->is_allowed($item->resource, $item->privilege))
             {
                 continue;
             }
@@ -285,6 +285,22 @@ class Kohana_Menu {
 			return $this->attrs[$key];
 		}
 	}
+	/**
+	 * Function which handles A2/ string roles
+	 *
+	 * @param String resource
+	 * @param String privilege
+	 * @return boolean
+         */
+	public function is_allowed($resource, $privilege)
+	{
+		if ( ! is_string(self::$role))
+			return self::$role->allowed($resource, $privilege, false);
+		else
+			return self::$acl->is_allowed(self::$role, $resource, privilege);
+
+	}
+
 	
 	/**
 	 * Nicely outputs contents of $this->items for debugging info
