@@ -294,6 +294,8 @@ class Kohana_Menu {
          */
 	public function is_allowed($resource, $privilege)
 	{
+		if ( ! $resource || ! $privilege)
+			return true;
 		if ( ! is_string(self::$role))
 			return self::$role->allowed($resource, $privilege, false);
 		else
