@@ -17,16 +17,16 @@
 class Kohana_Menu {
 
 	// Associative array of list items
-	private $items = array();
+	protected $items = array();
 	
 	// Associative array of attributes for list
-	private $attrs = array();
+	protected $attrs = array();
     
     // Instance of class ACL
-    private $acl;
+    protected static $acl;
     
     // String - Role of ACL
-    private $role;
+    protected static $role;
 	
 	/**
 	 * Creates and returns a new menu object
@@ -59,7 +59,7 @@ class Kohana_Menu {
      */
     public function set_acl(ACL $acl)
     {
-        $this->acl = $acl;
+        self::$acl = $acl;
         
         return $this;
     }
@@ -72,11 +72,41 @@ class Kohana_Menu {
      */
     public function set_role($role)
     {
-        $this->role = $role;
+        self::$role = $role;
         
         return $this;
     }
-	
+
+    /**
+     * Static setter/getter for ACL nb - non-chainable
+     *
+     * @param    ACL Instance of class ACL (or null for getter)
+     * @return   ACL
+     */
+    public static function acl(ACL $acl = NULL)
+    {
+	if ( ! $acl)
+	    return self::$acl;
+	return self::$acl = $acl;
+
+
+    }
+
+    /**
+     * Static setter/getter for Role of ACL - nb non-chainable
+     *
+     * @param     mixed Role of ACL (can be string or A2 object (by Wouterrr https://github.com/Wouterrr/A2)
+     * @return    mixed Role
+     */
+    public static function role($role = NULL)
+    {
+	if ( ! $role)
+	    return self::$role;
+	return self::$role = $role;
+
+
+    }
+
 	/**
 	 * Add's a new list item to the menu
 	 *
@@ -145,10 +175,10 @@ class Kohana_Menu {
 		
 		$menu = PHP_EOL.'<ul'.HTML::attributes($attrs).'>'.PHP_EOL;
 		
-		$is_acl = isset($this->acl) && isset($this->role);
+		$is_acl = isset(self::$acl) && isset(self::$role);
         foreach ($items as $item)
 		{
-			if ($is_acl AND ! $this->acl->is_allowed($this->role, $item->resource, $item->privilege))
+			if ($is_acl AND ! self::$acl->is_allowed(self::$role, $item->resource, $item->privilege))
             {
                 continue;
             }
